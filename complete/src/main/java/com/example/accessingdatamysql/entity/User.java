@@ -1,4 +1,6 @@
-package com.example.accessingdatamysql;
+package com.example.accessingdatamysql.entity;
+
+import com.sun.istack.NotNull;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,6 +15,7 @@ public class User {
 
 	private String name;
 
+	@NotNull
 	private String email;
 
 	public Integer getId() {
