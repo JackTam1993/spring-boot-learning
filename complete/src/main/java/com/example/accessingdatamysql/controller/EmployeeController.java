@@ -16,7 +16,7 @@ public class EmployeeController {
     EmployeeRepository employeeRepository;
 
     @PostMapping(path = "/save")
-    public String addNewUser (@RequestParam String name, @RequestParam Integer level) {
+    public Response addNewUser (@RequestParam String name, @RequestParam Integer level) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
@@ -31,13 +31,13 @@ public class EmployeeController {
                     .isActive(1)
                     .build();
                 employeeRepository.save(employee);
-                return "Saved";
+                return Response.ok();
             } catch (Exception e) {
                 System.out.print(e);
+                return Response.fail(ErrorCodes.USER_EXIST);
             }
-            return "Saved";
         } else {
-            return "User already exist";
+            return Response.fail(ErrorCodes.USER_EXIST);
         }
     }
 
@@ -60,13 +60,14 @@ public class EmployeeController {
                 Employee employee = employeeRepository.findById(id).get();
                 employee.setLevel(level);
                 employeeRepository.save(employee);
+                return Response.ok(); 
             } else {
                 return Response.fail(ErrorCodes.NO_SUCH_USER);
             }
         } catch (Exception e) {
             System.out.print(e);
+            return Response.fail(ErrorCodes.NO_SUCH_USER);
         }
-        return Response.ok(); 
     }
 
     @PostMapping(path = "/delete")
@@ -80,12 +81,13 @@ public class EmployeeController {
                 employee.setIsActive(0);
                 
                 employeeRepository.save(employee);
+                return Response.ok();
             } else {
                 return Response.fail(ErrorCodes.NO_SUCH_USER);
             }
         } catch (Exception e) {
             System.out.print(e);
+            return Response.fail(ErrorCodes.NO_SUCH_USER);
         }
-        return Response.ok(); 
     }
 }
