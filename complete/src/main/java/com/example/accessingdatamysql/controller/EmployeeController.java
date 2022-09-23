@@ -1,15 +1,14 @@
 package com.example.accessingdatamysql.controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.accessingdatamysql.common.ErrorCodes;
+import com.example.accessingdatamysql.common.Response;
 import com.example.accessingdatamysql.entity.Employee;
 import com.example.accessingdatamysql.repository.EmployeeRepository;
 
-@Controller
+@RestController
 @RequestMapping(path = "/employee")
 public class EmployeeController {
 
@@ -17,7 +16,7 @@ public class EmployeeController {
     EmployeeRepository employeeRepository;
 
     @PostMapping(path = "/save")
-    public @ResponseBody String addNewUser (@RequestParam String name, @RequestParam Integer level) {
+    public String addNewUser (@RequestParam String name, @RequestParam Integer level) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
@@ -43,8 +42,8 @@ public class EmployeeController {
     }
 
     @GetMapping(path = "/all")
-    public @ResponseBody Iterable<Employee> getAllEmployee () {
-        return employeeRepository.findByIsActive(1);
+    public @ResponseBody Response getAllEmployee () {
+        return Response.ok(employeeRepository.findByIsActive(1));
     }
 
     @GetMapping(path = "/employeeList/{level}")
@@ -53,7 +52,7 @@ public class EmployeeController {
     }
 
     @PostMapping(path = "/updateLevel")
-    public @ResponseBody String updateEmployee(@RequestParam Integer id, @RequestParam Integer level) {
+    public @ResponseBody Response updateEmployee(@RequestParam Integer id, @RequestParam Integer level) {
         
         try {
             Boolean isEmployeeExist = employeeRepository.existsById(id);
@@ -62,16 +61,16 @@ public class EmployeeController {
                 employee.setLevel(level);
                 employeeRepository.save(employee);
             } else {
-                return "no such a employee";
+                return Response.fail(ErrorCodes.NO_SUCH_USER);
             }
         } catch (Exception e) {
             System.out.print(e);
         }
-        return "updated successfully"; 
+        return Response.ok(); 
     }
 
     @PostMapping(path = "/delete")
-    public @ResponseBody String deleteEmployee(@RequestParam Integer id) {
+    public @ResponseBody Response deleteEmployee(@RequestParam Integer id) {
         
         try {
             Boolean isEmployeeExist = employeeRepository.existsById(id);
@@ -82,11 +81,11 @@ public class EmployeeController {
                 
                 employeeRepository.save(employee);
             } else {
-                return "no such a employee";
+                return Response.fail(ErrorCodes.NO_SUCH_USER);
             }
         } catch (Exception e) {
             System.out.print(e);
         }
-        return "Deleted"; 
+        return Response.ok(); 
     }
 }
